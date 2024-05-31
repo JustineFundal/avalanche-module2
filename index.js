@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
+import Web3 from 'web3';
+
 
 function App() {
   const [rpm, setRpm] = useState('');
+  const [account, setAccount] = useState('');
+  const [web3, setWeb3] = useState(null);
 
   const handleInputChange = (e) => {
     setRpm(e.target.value);
@@ -19,10 +23,53 @@ function App() {
     return 'You are in 1st gear';
   };
 
+  const connectWallet = async () => {
+    if (window.ethereum) {
+      try {
+        const web3Instance = new Web3(window.ethereum);
+        await window.ethereum.enable();
+        const accounts = await web3Instance.eth.getAccounts();
+        const address = accounts[0];
+        setAccount(address);
+        setWeb3(web3Instance);
+        console.log("Connected to MetaMask with address:", address);
+      } catch (error) {
+        console.error("Error connecting to MetaMask", error);
+        alert("Error connecting to MetaMask: " + error.message);
+      }
+    } else {
+      console.log("MetaMask not detected");
+      alert("MetaMask not detected. Please install MetaMask and try again.");
+    }
+  };
+
+  const sendTransaction = async () => {
+    if (web3 && account) {
+      try {
+        const valueToSend = web3.utils.toWei('0.01', 'ether');
+        await web3.eth.sendTransaction({
+          from: account,
+          to: '0xYourRecipientAddress', // Replace with the recipient's address
+          value: valueToSend, // Specify the amount to send
+        });
+        console.log('Transaction sent');
+      } catch (error) {
+        console.error('Error sending transaction', error);
+        alert('Error sending transaction: ' + error.message);
+      }
+    } else {
+      console.log('Wallet not connected or MetaMask not detected');
+      alert('Wallet not connected or MetaMask not detected');
+    }
+  };
+
   return (
     <div className="App">
       <header className="App-header">
         <h1>RPM Gear Indicator</h1>
+        <button onClick={connectWallet}>
+          {account ? `Connected: ${account}` : 'Connect MetaMask'}
+        </button>
         <input
           type="text"
           value={rpm}
@@ -30,30 +77,44 @@ function App() {
           placeholder="Enter RPM or R/r for reverse"
         />
         <p>{getGear()}</p>
+      
+
+      
       </header>
-<style jsx>{`
-.App {
-  text-align: center;
-}
+      <style jsx>{`
+        .App {
+          text-align: center;
+        }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
+        .App-header {
+          background-color: #282c34;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          font-size: calc(10px + 2vmin);
+          color: white;
+        }
 
-input {
-  padding: 10px;
-  font-size: 1rem;
-  margin-bottom: 20px;
-}
+        input {
+          padding: 10px;
+          font-size: 1rem;
+          margin-bottom: 20px;
+        }
 
-`}</style>
+        button {
+          padding: 10px 20px;
+          font-size: 1rem;
+          margin-bottom: 20px;
+          cursor: pointer;
+        }
+
+        button:disabled {
+          background-color: grey;
+          cursor: not-allowed;
+        }
+      `}</style>
     </div>
   );
 }
