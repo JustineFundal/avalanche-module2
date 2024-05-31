@@ -56,3 +56,9 @@ Solidity Contract: Interact with the deployed contract using a web3 provider or 
 
 
 AUTHORS:
+
+creator: Justine Felix V. Fundal
+
+email: 8213339@ntc.edu.ph
+
+contact: 09176510079
