@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Web3 from 'web3';
 
-
 function App() {
   const [rpm, setRpm] = useState('');
   const [account, setAccount] = useState('');
@@ -49,8 +48,8 @@ function App() {
         const valueToSend = web3.utils.toWei('0.01', 'ether');
         await web3.eth.sendTransaction({
           from: account,
-          to: '0xYourRecipientAddress', // Replace with the recipient's address
-          value: valueToSend, // Specify the amount to send
+          to: '0xYourRecipientAddress',
+          value: valueToSend,
         });
         console.log('Transaction sent');
       } catch (error) {
@@ -77,9 +76,9 @@ function App() {
           placeholder="Enter RPM or R/r for reverse"
         />
         <p>{getGear()}</p>
-      
-
-      
+        <button onClick={sendTransaction} disabled={!account}>
+          Send Transaction
+        </button>
       </header>
       <style jsx>{`
         .App {
