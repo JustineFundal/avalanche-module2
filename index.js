@@ -11,7 +11,8 @@ function App() {
   };
 
   const getGear = () => {
-    if (rpm === '' || rpm === '0') return 'Neutral';
+    if (account != ""){
+      if (rpm === '' || rpm === '0') return 'Neutral';
     if (rpm.toLowerCase() === 'r') return 'You are in Reverse mode';
     const rpmValue = parseInt(rpm, 10);
     if (isNaN(rpmValue)) return 'Invalid input';
@@ -20,6 +21,7 @@ function App() {
     if (rpmValue >= 60) return 'You are in 3rd gear';
     if (rpmValue >= 20) return 'You are in 2nd gear';
     return 'You are in 1st gear';
+    } return "you need to connect to your metamask first";
   };
 
   const connectWallet = async () => {
@@ -28,13 +30,12 @@ function App() {
         const web3Instance = new Web3(window.ethereum);
         await window.ethereum.enable();
         const accounts = await web3Instance.eth.getAccounts();
-        const address = accounts[0];
-        setAccount(address);
+        setAccount(accounts[0]); 
         setWeb3(web3Instance);
         console.log("Connected to MetaMask with address:", address);
       } catch (error) {
         console.error("Error connecting to MetaMask", error);
-        alert("Error connecting to MetaMask: " + error.message);
+        
       }
     } else {
       console.log("MetaMask not detected");
@@ -42,25 +43,6 @@ function App() {
     }
   };
 
-  const sendTransaction = async () => {
-    if (web3 && account) {
-      try {
-        const valueToSend = web3.utils.toWei('0.01', 'ether');
-        await web3.eth.sendTransaction({
-          from: account,
-          to: '0xYourRecipientAddress',
-          value: valueToSend,
-        });
-        console.log('Transaction sent');
-      } catch (error) {
-        console.error('Error sending transaction', error);
-        alert('Error sending transaction: ' + error.message);
-      }
-    } else {
-      console.log('Wallet not connected or MetaMask not detected');
-      alert('Wallet not connected or MetaMask not detected');
-    }
-  };
 
   return (
     <div className="App">
@@ -76,9 +58,7 @@ function App() {
           placeholder="Enter RPM or R/r for reverse"
         />
         <p>{getGear()}</p>
-        <button onClick={sendTransaction} disabled={!account}>
-          Send Transaction
-        </button>
+
       </header>
       <style jsx>{`
         .App {
